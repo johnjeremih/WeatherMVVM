@@ -1,16 +1,9 @@
 package com.john.wathermvvm.model
 
-import android.os.Parcelable
-import androidx.room.ColumnInfo
-import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.*
 import com.google.gson.annotations.SerializedName
-import kotlinx.parcelize.Parcelize
 
-
-@Parcelize
-@Entity(tableName = "CityTable")
+@Entity(tableName = "CityTable", indices = [Index(value = ["cityName"], unique = true)])
 data class City(
 
     @PrimaryKey(autoGenerate = true)
@@ -69,7 +62,7 @@ data class City(
     @SerializedName("low_temp")
     var lowTemp: String?,
 
-    ) : Parcelable {
+    ) {
     fun getTempString(): String {
         return (tempInC?.substringBefore(".") ?: "") + "°F"
     }
@@ -87,5 +80,5 @@ data class City(
 data class WeatherDataResponse(
     @SerializedName("data")
     val `data`: ArrayList<City>,
-    )
+)
 

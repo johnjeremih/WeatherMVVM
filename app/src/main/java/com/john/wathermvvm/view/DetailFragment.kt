@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
@@ -45,18 +44,6 @@ class DetailFragment : Fragment() {
 
         cityId = arguments?.getLong("cityId")
         viewModel.getCity(cityId, false)
-
-        binding.detailToolbar.inflateMenu(R.menu.refresh)
-
-        binding.detailToolbar.setOnMenuItemClickListener {
-            when(it.itemId) {
-                R.id.menu_refresh -> {
-                viewModel.getCity(cityId,true)
-                }
-
-            }
-            true
-        }
 
         binding.detailToolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
         binding.detailToolbar.setNavigationOnClickListener {

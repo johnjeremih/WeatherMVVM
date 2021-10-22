@@ -16,7 +16,6 @@ constructor(
 ) {
     private var latitude: Double =0.0
     private var longitude: Double =0.0
-    lateinit var city: City
 
     suspend fun getCities(
         lat: Double?,
@@ -35,14 +34,6 @@ constructor(
             cacheCityDataSource.insertCity(cityFromNetwork)
             val cachedList = cacheCityDataSource.getCities()
             emit(NetworkDataState.Success(cachedList))
-
-            for (cache in cachedList){
-
-                if (cityFromNetwork.data[0].lon == cache.lon && cityFromNetwork.data[0].lat == cache.lat){
-                    city = cache
-                }
-
-            }
         }
 
     }
@@ -63,9 +54,6 @@ constructor(
             cachedCity = cacheCityDataSource.getCity(cityId)
             emit(NetworkDataState.Success(cachedCity))
         }
-
-
-        city = cachedCity
 
     }
     suspend fun deleteCity(cityId: Long):  Flow<NetworkDataState<String>> = flow {
@@ -91,8 +79,9 @@ constructor(
 
         // If the forecast is not cached in the database or isRefreshing is true pull from the network, otherwise pull from database
         if (cachedWeather.isEmpty()|| isRefreshing){
+            val cachedCity = cacheCityDataSource.getCity(cityId)
 
-            val networkForecast = networkDataSource.getForecast(city.lat!!, city.lon!!)
+            val networkForecast = networkDataSource.getForecast(cachedCity.lat!!, cachedCity.lon!!)
 
             forecastDataSource.insertForecast(networkForecast.data, cityId)
             cachedWeather = forecastDataSource.getForecast(cityId)
