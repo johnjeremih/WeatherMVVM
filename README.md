@@ -8,8 +8,12 @@ This is an API sample to showcase how to implement observable queries in
 * [LiveData](https://developer.android.com/reference/android/arch/lifecycle/LiveData.html)
 * [ViewModels](https://developer.android.com/reference/android/arch/lifecycle/ViewModel.html)
 * [ViewBinding](https://developer.android.com/topic/libraries/view-binding)
+* [Navigation](https://developer.android.com/jetpack/androidx/releases/navigation)
 * [Hilt](https://developer.android.com/training/dependency-injection/hilt-android)
 * [Google Map API](https://developers.google.com/maps/documentation/places/android-sdk/autocomplete?hl=es-419#maps_places_autocomplete_country_filter-kotlin)
+* [Picasso](http://square.github.io/picasso/)
+* [Retrofit](https://square.github.io/retrofit/)
+
 
 
 ### Screenshots
