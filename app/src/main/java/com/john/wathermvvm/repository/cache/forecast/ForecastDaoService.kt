@@ -7,6 +7,8 @@ interface ForecastDaoService {
 
     suspend fun insertForecast(forecast: City): Long
 
+    suspend fun updateForecast(forecast: City)
+
     suspend fun getForecast(cityId: Long): List<City>
 
     suspend fun deleteForecast(cityId: Long)

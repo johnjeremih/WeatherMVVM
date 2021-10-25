@@ -5,7 +5,9 @@ import com.john.wathermvvm.model.City
 
 interface CityDaoService {
 
-    suspend fun insertCity(mainWeather: City): Long
+    suspend fun insertCity(city: City): Long
+
+    suspend fun updateCity(city: City)
 
     suspend fun getCities(): List<City>
 

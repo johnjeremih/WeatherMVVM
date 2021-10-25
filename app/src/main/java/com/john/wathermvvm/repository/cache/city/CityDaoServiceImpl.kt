@@ -11,6 +11,10 @@ constructor(
         return cityDao.insertCity(mainWeather)
     }
 
+    override suspend fun updateCity(city: City) {
+         cityDao.update(city)
+    }
+
     override suspend fun getCities(): List<City> {
         return cityDao.getCities()
     }

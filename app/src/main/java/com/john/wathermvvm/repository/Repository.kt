@@ -3,6 +3,7 @@ package com.john.wathermvvm.repository
 import com.john.wathermvvm.model.City
 import com.john.wathermvvm.repository.cache.forecast.CacheForecastDataSource
 import com.john.wathermvvm.repository.cache.city.CacheCityDataSource
+import com.john.wathermvvm.repository.mapper.UpdateCityMapper
 import com.john.wathermvvm.repository.network.NetworkDataState
 import com.john.wathermvvm.repository.network.CityNetworkData
 import kotlinx.coroutines.flow.Flow
@@ -13,6 +14,7 @@ constructor(
     private val cacheCityDataSource: CacheCityDataSource,
     private val forecastDataSource: CacheForecastDataSource,
     private val networkDataSource: CityNetworkData,
+    private val updateCityMapper: UpdateCityMapper
 ) {
     private var latitude: Double =0.0
     private var longitude: Double =0.0
@@ -45,7 +47,7 @@ constructor(
         //If isRefreshing is true pull from the network, otherwise pull from database
         if (isRefreshing){
             val cityFromNetwork = networkDataSource.getCurrentWeather(cachedCity.lat!!, cachedCity.lon!!)
-            cacheCityDataSource.updateCity(cityFromNetwork)
+            cacheCityDataSource.updateCity(updateCityMapper.buildModel(cityFromNetwork.data[0],cachedCity,0))
 
             cachedCity = cacheCityDataSource.getCity(cityId)
             emit(NetworkDataState.Success(cachedCity))
@@ -76,19 +78,25 @@ constructor(
         emit(NetworkDataState.Loading)
 
         var cachedWeather = forecastDataSource.getForecast(cityId!!)
-
+        val cachedCity = cacheCityDataSource.getCity(cityId)
         // If the forecast is not cached in the database or isRefreshing is true pull from the network, otherwise pull from database
-        if (cachedWeather.isEmpty()|| isRefreshing){
-            val cachedCity = cacheCityDataSource.getCity(cityId)
+        when {
+            cachedWeather.isEmpty() -> {
+                val networkForecast = networkDataSource.getForecast(cachedCity.lat!!, cachedCity.lon!!)
+                forecastDataSource.insertForecast(networkForecast.data, cityId)
+                cachedWeather = forecastDataSource.getForecast(cityId)
+                emit(NetworkDataState.Success(cachedWeather))
+            }
+            isRefreshing -> {
+                val networkForecast = networkDataSource.getForecast(cachedCity.lat!!, cachedCity.lon!!)
+                forecastDataSource.updateForecast(networkForecast.data,cachedWeather, cityId)
+                cachedWeather = forecastDataSource.getForecast(cityId)
+                emit(NetworkDataState.Success(cachedWeather))
+            }
+            else -> {
+                emit(NetworkDataState.Success(cachedWeather))
 
-            val networkForecast = networkDataSource.getForecast(cachedCity.lat!!, cachedCity.lon!!)
-
-            forecastDataSource.insertForecast(networkForecast.data, cityId)
-            cachedWeather = forecastDataSource.getForecast(cityId)
-            emit(NetworkDataState.Success(cachedWeather))
-        }else{
-
-            emit(NetworkDataState.Success(cachedWeather))
+            }
         }
     }
 

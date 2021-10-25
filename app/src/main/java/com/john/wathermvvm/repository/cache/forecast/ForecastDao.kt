@@ -12,6 +12,9 @@ interface ForecastDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertForecast(forecast: City): Long
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun updateForecast(forecast: City)
+
     @Query("SELECT * FROM CityTable WHERE cityId = :cityId")
     suspend fun getForecast(cityId: Long): List<City>
 

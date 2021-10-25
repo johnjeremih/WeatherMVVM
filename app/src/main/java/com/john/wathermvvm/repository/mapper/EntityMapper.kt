@@ -1,7 +1,7 @@
 package com.john.wathermvvm.repository.mapper
 
-interface EntityMapper<Entity, MainModel> {
+interface EntityMapper<NetworkEntity, CacheEntity,CityId> {
 
-    fun mapFrom(entity: Entity, cityId: Long): MainModel
+    fun buildModel(entity: NetworkEntity, mainModel: CacheEntity,value:CityId): CacheEntity
 
 }

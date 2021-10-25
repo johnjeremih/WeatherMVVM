@@ -45,6 +45,18 @@ class DetailFragment : Fragment() {
         cityId = arguments?.getLong("cityId")
         viewModel.getCity(cityId, false)
 
+        binding.detailToolbar.inflateMenu(R.menu.refresh)
+
+        binding.detailToolbar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.menu_refresh -> {
+                    viewModel.getCity(cityId, true)
+                }
+
+            }
+            true
+        }
+
         binding.detailToolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
         binding.detailToolbar.setNavigationOnClickListener {
             Navigation.findNavController(
@@ -83,7 +95,9 @@ class DetailFragment : Fragment() {
             when (it) {
                 is NetworkDataState.Success<List<City>> -> {
                     isProgressBarVisible(false)
-                    setForecast(it.data)
+                    if (it.data != null) {
+                        setForecast(it.data)
+                    }
                 }
                 is NetworkDataState.Error -> {
                     isProgressBarVisible(false)

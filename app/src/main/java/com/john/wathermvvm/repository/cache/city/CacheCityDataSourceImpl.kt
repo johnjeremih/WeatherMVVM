@@ -11,8 +11,8 @@ constructor(
         return cityDaoService.insertCity(weatherModel.data[0])
     }
 
-    override suspend fun updateCity(weatherModel: WeatherDataResponse): Long {
-        return cityDaoService.insertCity(weatherModel.data[0])
+    override suspend fun updateCity(city: City) {
+        cityDaoService.updateCity(city)
     }
 
     override suspend fun insertList(weatherList: List<City>) {

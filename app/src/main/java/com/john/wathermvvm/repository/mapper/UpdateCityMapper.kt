@@ -3,11 +3,12 @@ package com.john.wathermvvm.repository.mapper
 import com.john.wathermvvm.model.City
 import javax.inject.Inject
 
-class ForecastMapper
-@Inject constructor() : EntityMapper<City, City?,Long> {
-    override fun buildModel(entity: City, mainModel: City?, value: Long): City {
+class UpdateCityMapper
+@Inject constructor() : EntityMapper<City, City,Long> {
+    override fun buildModel(entity: City, mainModel: City, value: Long): City {
+
         return City(
-            id = mainModel?.id,
+            id = mainModel.cityId,
             countryName = entity.countryName,
             cityName = entity.cityName,
             tempInF = entity.tempInF,

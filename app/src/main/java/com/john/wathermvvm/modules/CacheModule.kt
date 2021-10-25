@@ -20,7 +20,7 @@ object CacheModule {
 
     @Singleton
     @Provides
-    fun provideCacheMapper(): EntityMapper<City, City> {
+    fun provideCacheMapper(): ForecastMapper {
         return ForecastMapper()
     }
 

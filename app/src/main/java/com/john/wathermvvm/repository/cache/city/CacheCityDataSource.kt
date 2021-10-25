@@ -7,7 +7,7 @@ interface CacheCityDataSource {
 
     suspend fun insertCity(weatherModel: WeatherDataResponse): Long
 
-    suspend fun updateCity(weatherModel: WeatherDataResponse): Long
+    suspend fun updateCity(city: City)
 
     suspend fun insertList(weatherList: List<City>)
 
