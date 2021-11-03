@@ -16,7 +16,8 @@ These are the APIs that this project includes
 * [Pretty time](https://www.ocpsoft.org/prettytime/)
 * [Kotlin Coroutines](https://developer.android.com/kotlin/coroutines)
 * [Kotlin Flow](https://developer.android.com/kotlin/flow)
-
+* [Weather Bit](https://rapidapi.com/weatherbit/api/weather/)
+  
 ### Screenshots
 ![image](https://user-images.githubusercontent.com/4177453/138528178-846ece6a-30e6-47f1-8032-335cbfc26967.png)
 
@@ -49,3 +50,14 @@ uses the `inflate()` API and `BindFragment` shows the less common `bind()` API.
 
 
 
+#### API KEYS
+
+The app won't run unless you add the Google Key And RapidKey
+* [Weather Bit API Key](https://rapidapi.com/weatherbit/api/weather/)
+* [Google Map API KEY](https://console.cloud.google.com/google/maps-apis)
+
+![image](https://user-images.githubusercontent.com/4177453/139963318-47d0300f-e81d-4717-a8f1-eb6d83d0c39b.png)
+
+![image](https://user-images.githubusercontent.com/4177453/139963382-ab2083b3-ec6c-4539-bf91-5e6cee1a5cee.png)
+
+![image](https://user-images.githubusercontent.com/4177453/139963416-d8b88895-2510-4c3e-958a-54371bf871d8.png)
