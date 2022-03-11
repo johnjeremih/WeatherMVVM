@@ -10,12 +10,12 @@ apply plugin: 'dagger.hilt.android.plugin'
 
 
 android {
-    compileSdk 29
+    compileSdk 32
 
     defaultConfig {
         applicationId "com.john.wathermvvm"
         minSdk 23
-        targetSdk 29
+        targetSdk 32
         versionCode 1
         versionName "1.0"
 
@@ -39,19 +39,20 @@ android {
     buildFeatures{
         viewBinding true
     }
+    namespace 'com.john.wathermvvm'
 }
 
 dependencies {
 
-    implementation 'androidx.core:core-ktx:1.6.0'
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'com.google.android.material:material:1.4.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
-    implementation "androidx.fragment:fragment-ktx:1.3.6"
+    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
+    implementation 'androidx.fragment:fragment-ktx:1.4.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     //LiveData and ViewModel
-    def live_data_ktx = "2.3.1"
+    def live_data_ktx = '2.4.1'
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$live_data_ktx"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$live_data_ktx"
 
@@ -67,13 +68,13 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-gson:$retrofit"
 
     //Room
-    def room = "2.3.0"
+    def room = '2.4.2'
     implementation "androidx.room:room-runtime:$room"
     implementation "androidx.room:room-ktx:$room"
     kapt "androidx.room:room-compiler:$room"
 
     // Navigation
-    def navigation = "2.3.5"
+    def navigation = '2.4.1'
     implementation "androidx.navigation:navigation-fragment-ktx:$navigation"
     implementation "androidx.navigation:navigation-ui-ktx:$navigation"
 
@@ -82,7 +83,7 @@ dependencies {
     implementation ('com.android.volley:volley:1.2.1')
 
     // Pretty time
-    implementation	( "org.ocpsoft.prettytime:prettytime:4.0.3.Final")
+    implementation	('org.ocpsoft.prettytime:prettytime:5.0.2.Final')
 
     //Picasso
     implementation 'com.squareup.picasso:picasso:2.71828'
