@@ -1,10 +1,8 @@
 package com.john.wathermvvm.modules
 
 import com.john.wathermvvm.repository.Repository
-import com.john.wathermvvm.repository.cache.forecast.CacheForecastDataSource
-import com.john.wathermvvm.repository.cache.city.CacheCityDataSource
-import com.john.wathermvvm.repository.mapper.UpdateCityMapper
-import com.john.wathermvvm.repository.network.CityNetworkData
+import com.john.wathermvvm.repository.cache.DataSource
+import com.john.wathermvvm.repository.network.NetworkData
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,11 +16,9 @@ object RepositoryModule {
     @Singleton
     @Provides
     fun provideGetWeather(
-        cityCache: CacheCityDataSource,
-        forecastCache: CacheForecastDataSource,
-        networkData: CityNetworkData,
-        updateCityMapper: UpdateCityMapper
+        cityCache: DataSource,
+        networkData: NetworkData
     ): Repository {
-        return Repository(cityCache, forecastCache, networkData,updateCityMapper)
+        return Repository(cityCache, networkData)
     }
 }
