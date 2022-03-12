@@ -14,12 +14,16 @@ import com.google.android.material.snackbar.Snackbar
 import com.john.wathermvvm.R
 import com.john.wathermvvm.databinding.DetailFragmentBinding
 import com.john.wathermvvm.model.City
+import com.john.wathermvvm.model.Forecast
 import com.john.wathermvvm.repository.network.NetworkDataState
-import com.john.wathermvvm.view.adapters.ForecastAdapter
+import com.john.wathermvvm.view.adapters.forecast.ForecastAdapter
 import com.john.wathermvvm.viewmodel.DetailViewModel
-import com.john.wathermvvm.xutil.TimeAgoFormatter
+import com.john.wathermvvm.util.TimeAgoFormatter
 import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class DetailFragment : Fragment() {
@@ -27,6 +31,7 @@ class DetailFragment : Fragment() {
     private var cityId: Long? = null
     private lateinit var binding: DetailFragmentBinding
     private val viewModel: DetailViewModel by viewModels()
+    private val adapterScope = CoroutineScope(Dispatchers.IO)
 
     private val format: TimeAgoFormatter = TimeAgoFormatter()
     private lateinit var adapter: ForecastAdapter
@@ -71,7 +76,7 @@ class DetailFragment : Fragment() {
 
     private fun setObservers() {
 
-        viewModel.cityNetworkState.observe(viewLifecycleOwner, {
+        viewModel.cityNetworkState.observe(viewLifecycleOwner) {
             when (it) {
                 is NetworkDataState.Success<City> -> {
                     isProgressBarVisible(false)
@@ -89,15 +94,13 @@ class DetailFragment : Fragment() {
                     isProgressBarVisible(true)
                 }
             }
-        })
+        }
 
-        viewModel.forecastNetworkState.observe(viewLifecycleOwner, {
+        viewModel.forecastNetworkState.observe(viewLifecycleOwner) {
             when (it) {
-                is NetworkDataState.Success<List<City>> -> {
+                is NetworkDataState.Success<List<Forecast>> -> {
                     isProgressBarVisible(false)
-                    if (it.data != null) {
-                        setForecast(it.data)
-                    }
+                    setForecast(it.data)
                 }
                 is NetworkDataState.Error -> {
                     isProgressBarVisible(false)
@@ -111,18 +114,21 @@ class DetailFragment : Fragment() {
                     isProgressBarVisible(true)
                 }
             }
-        })
+        }
 
     }
 
-    private fun setForecast(data: List<City>) {
+    private fun setForecast(data: List<Forecast>) {
 
         adapter = ForecastAdapter()
         val linearLayoutManager: RecyclerView.LayoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.detailRecyclerView.layoutManager = linearLayoutManager
         binding.detailRecyclerView.adapter = adapter
-        adapter.submitForecastList(data)
+
+        adapterScope.launch {
+            adapter.submitList(data)
+        }
 
     }
 

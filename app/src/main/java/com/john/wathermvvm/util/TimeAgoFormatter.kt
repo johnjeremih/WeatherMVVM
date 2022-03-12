@@ -1,4 +1,4 @@
-package com.john.wathermvvm.xutil
+package com.john.wathermvvm.util
 
 
 import android.text.TextUtils
