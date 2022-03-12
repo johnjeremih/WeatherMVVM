@@ -1,7 +1,6 @@
-package com.john.wathermvvm.xutil
+package com.john.wathermvvm.util
 
 import android.text.TextUtils
-import com.john.wathermvvm.xutil.TimeFormatter
 import java.text.DateFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat

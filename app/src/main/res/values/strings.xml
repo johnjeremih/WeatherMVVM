@@ -2,7 +2,7 @@
     <string name="app_name">Weather MVVM</string>
     <string name="image_holder">https://www.weatherbit.io/static/img/icons/%1$s.png</string>
     <string name="city_value">Indianapolis</string>
-    <string name="search_label">Search...</string>
+    <string name="search_label">Search…</string>
     <string name="city_name_label">city name</string>
     <string name="temperature_value">20</string>
     <string name="time_ago_value">4 min ago</string>

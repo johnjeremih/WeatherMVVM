@@ -1,25 +1,23 @@
 package com.john.wathermvvm.repository
 
 import com.john.wathermvvm.model.City
-import com.john.wathermvvm.repository.cache.forecast.CacheForecastDataSource
-import com.john.wathermvvm.repository.cache.city.CacheCityDataSource
-import com.john.wathermvvm.repository.mapper.UpdateCityMapper
+import com.john.wathermvvm.model.Forecast
+import com.john.wathermvvm.repository.cache.DataSource
+import com.john.wathermvvm.repository.network.NetworkData
 import com.john.wathermvvm.repository.network.NetworkDataState
-import com.john.wathermvvm.repository.network.CityNetworkData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import retrofit2.HttpException
+import java.io.IOException
+import java.net.UnknownHostException
 
 class Repository
 constructor(
-    private val cacheCityDataSource: CacheCityDataSource,
-    private val forecastDataSource: CacheForecastDataSource,
-    private val networkDataSource: CityNetworkData,
-    private val updateCityMapper: UpdateCityMapper
+    private val dataSource: DataSource,
+    private val networkDataSource: NetworkData
 ) {
-    private var latitude: Double =0.0
-    private var longitude: Double =0.0
 
-    suspend fun getCities(
+    fun getCities(
         lat: Double?,
         lon: Double?
     ): Flow<NetworkDataState<List<City>>> = flow {
@@ -27,77 +25,117 @@ constructor(
 
         // If Latitude or Longitude are null get the data from database
         if (lat == null || lon == null) {
-            val cachedWeather = cacheCityDataSource.getCities()
+            val cachedWeather = dataSource.getCities()
             emit(NetworkDataState.Success(cachedWeather))
         } else {
-            latitude = lat
-            longitude = lon
-            val cityFromNetwork = networkDataSource.getCurrentWeather(lat, lon)
-            cacheCityDataSource.insertCity(cityFromNetwork)
-            val cachedList = cacheCityDataSource.getCities()
-            emit(NetworkDataState.Success(cachedList))
+
+            try {
+
+                val cityFromNetwork = networkDataSource.getCurrentWeather(lat, lon)
+                dataSource.insertCity(cityFromNetwork.data[0])
+                val cachedList = dataSource.getCities()
+                emit(NetworkDataState.Success(cachedList))
+
+            } catch (e: HttpException) {
+                emit(NetworkDataState.Error(e))
+            } catch (e: IOException) {
+                emit(NetworkDataState.Error(e))
+            } catch (e: UnknownHostException) {
+                emit(NetworkDataState.Error(e))
+
+            }
+
         }
 
     }
 
-    suspend fun getCity(cityId: Long, isRefreshing: Boolean): Flow<NetworkDataState<City>> = flow {
+    fun getCity(cityId: Long, isRefreshing: Boolean): Flow<NetworkDataState<City>> = flow {
         emit(NetworkDataState.Loading)
-        var cachedCity = cacheCityDataSource.getCity(cityId)
+        var cachedCity = dataSource.getCity(cityId)
 
         //If isRefreshing is true pull from the network, otherwise pull from database
-        if (isRefreshing){
-            val cityFromNetwork = networkDataSource.getCurrentWeather(cachedCity.lat!!, cachedCity.lon!!)
-            cacheCityDataSource.updateCity(updateCityMapper.buildModel(cityFromNetwork.data[0],cachedCity,0))
+        if (isRefreshing) {
 
-            cachedCity = cacheCityDataSource.getCity(cityId)
-            emit(NetworkDataState.Success(cachedCity))
+            try {
 
-        }else{
-            cachedCity = cacheCityDataSource.getCity(cityId)
+                val cityFromNetwork =
+                    networkDataSource.getCurrentWeather(cachedCity.lat!!, cachedCity.lon!!)
+                dataSource.updateCity(cityFromNetwork.data[0], cachedCity, cachedCity.id)
+
+                cachedCity = dataSource.getCity(cityId)
+                emit(NetworkDataState.Success(cachedCity))
+
+            } catch (e: HttpException) {
+                emit(NetworkDataState.Error(e))
+            } catch (e: IOException) {
+                emit(NetworkDataState.Error(e))
+            } catch (e: UnknownHostException) {
+                emit(NetworkDataState.Error(e))
+            }
+
+
+        } else {
+            cachedCity = dataSource.getCity(cityId)
             emit(NetworkDataState.Success(cachedCity))
         }
 
     }
-    suspend fun deleteCity(cityId: Long):  Flow<NetworkDataState<String>> = flow {
+
+    suspend fun deleteCity(cityId: Long): Flow<NetworkDataState<Boolean>> = flow {
         emit(NetworkDataState.Loading)
-        val cachedWeather = cacheCityDataSource.deleteCity(cityId)
-        emit(NetworkDataState.Success(cachedWeather))
+        dataSource.deleteCity(cityId)
+        dataSource.deleteForecast(cityId)
+        emit(NetworkDataState.Success(true))
     }
 
-    suspend fun clearAll() = flow {
-        emit(NetworkDataState.Loading)
-        val cachedWeather = cacheCityDataSource.clearALL()
-        emit(NetworkDataState.Success(cachedWeather))
-    }
-
-
-    suspend fun getForecast(
+    fun getForecast(
         cityId: Long?,
         isRefreshing: Boolean
-    ): Flow<NetworkDataState<List<City>>> = flow {
+    ): Flow<NetworkDataState<List<Forecast>>> = flow {
         emit(NetworkDataState.Loading)
 
-        var cachedWeather = forecastDataSource.getForecast(cityId!!)
-        val cachedCity = cacheCityDataSource.getCity(cityId)
+        var cachedWeather = dataSource.getForecast(cityId!!)
+        val cachedCity = dataSource.getCity(cityId)
         // If the forecast is not cached in the database or isRefreshing is true pull from the network, otherwise pull from database
         when {
             cachedWeather.isEmpty() -> {
-                val networkForecast = networkDataSource.getForecast(cachedCity.lat!!, cachedCity.lon!!)
-                forecastDataSource.insertForecast(networkForecast.data, cityId)
-                cachedWeather = forecastDataSource.getForecast(cityId)
+                val networkForecast =
+                    networkDataSource.getForecast(cachedCity.lat!!, cachedCity.lon!!)
+                dataSource.insertForecast(networkForecast.data, cityId)
+                cachedWeather = dataSource.getForecast(cityId)
                 emit(NetworkDataState.Success(cachedWeather))
             }
             isRefreshing -> {
-                val networkForecast = networkDataSource.getForecast(cachedCity.lat!!, cachedCity.lon!!)
-                forecastDataSource.updateForecast(networkForecast.data,cachedWeather, cityId)
-                cachedWeather = forecastDataSource.getForecast(cityId)
-                emit(NetworkDataState.Success(cachedWeather))
+                try {
+
+                    val networkForecast =
+                        networkDataSource.getForecast(cachedCity.lat!!, cachedCity.lon!!)
+
+                    dataSource.updateForecast(networkForecast.data, cachedWeather, cityId)
+
+                    val cityFromNetwork =
+                        networkDataSource.getCurrentWeather(cachedCity.lat!!, cachedCity.lon!!)
+
+                    dataSource.updateCity(cityFromNetwork.data[0], cachedCity, cachedCity.id)
+                    cachedWeather = dataSource.getForecast(cityId)
+                    emit(NetworkDataState.Success(cachedWeather))
+
+                } catch (e: HttpException) {
+                    emit(NetworkDataState.Error(e))
+                } catch (e: IOException) {
+                    emit(NetworkDataState.Error(e))
+                } catch (e: UnknownHostException) {
+                    emit(NetworkDataState.Error(e))
+
+                }
+
+
             }
             else -> {
+
                 emit(NetworkDataState.Success(cachedWeather))
 
             }
         }
     }
-
 }

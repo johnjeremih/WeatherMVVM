@@ -2,10 +2,12 @@ package com.john.wathermvvm.modules
 
 import android.content.Context
 import androidx.room.Room
-import com.john.wathermvvm.model.City
-import com.john.wathermvvm.repository.cache.city.*
+import com.john.wathermvvm.repository.cache.*
+import com.john.wathermvvm.repository.cache.city.CityDao
+import com.john.wathermvvm.repository.cache.city.CityDaoService
+import com.john.wathermvvm.repository.cache.city.CityDaoServiceImpl
 import com.john.wathermvvm.repository.cache.forecast.*
-import com.john.wathermvvm.repository.mapper.EntityMapper
+import com.john.wathermvvm.repository.mapper.CityMapper
 import com.john.wathermvvm.repository.mapper.ForecastMapper
 import dagger.Module
 import dagger.Provides
@@ -26,12 +28,12 @@ object CacheModule {
 
     @Singleton
     @Provides
-    fun provideCitiesDb(@ApplicationContext context: Context): CityDatabase {
+    fun provideCitiesDb(@ApplicationContext context: Context): Database {
         return Room
             .databaseBuilder(
                 context,
-                CityDatabase::class.java,
-                CityDatabase.DATABASE_NAME
+                Database::class.java,
+                Database.DATABASE_NAME
             )
             .fallbackToDestructiveMigration()
             .build()
@@ -40,27 +42,14 @@ object CacheModule {
 
     @Singleton
     @Provides
-    fun provideForecastDb(@ApplicationContext context: Context): ForecastDatabase {
-        return Room
-            .databaseBuilder(
-                context,
-                ForecastDatabase::class.java,
-                ForecastDatabase.DATABASE_NAME
-            )
-            .fallbackToDestructiveMigration()
-            .build()
+    fun provideCitiesDao(database: Database): CityDao {
+        return database.weatherDao()
     }
 
     @Singleton
     @Provides
-    fun provideCitiesDAO(cityDatabase: CityDatabase): CityDao {
-        return cityDatabase.weatherDao()
-    }
-
-    @Singleton
-    @Provides
-    fun provideForecastDAO(forecastDatabase: ForecastDatabase): ForecastDao {
-        return forecastDatabase.forecastDao()
+    fun provideforcastDao(database: Database): ForecastDao {
+        return database.forecastDao()
     }
 
     @Singleton
@@ -83,18 +72,11 @@ object CacheModule {
     @Provides
     fun provideCacheDataSource(
         cityDaoService: CityDaoService,
-    ): CacheCityDataSource {
-        return CacheCityDataSourceImpl(cityDaoService)
-    }
-
-
-    @Singleton
-    @Provides
-    fun provideForecastCacheDataSource(
         forecastDaoService: ForecastDaoService,
-        cacheMapper: ForecastMapper
-    ): CacheForecastDataSource {
-        return CacheForecastDataSourceImpl(forecastDaoService, cacheMapper)
+        forecastMapper: ForecastMapper,
+        cityMapper: CityMapper
+    ): DataSource {
+        return DataSourceImpl(cityDaoService, forecastDaoService,forecastMapper,cityMapper)
     }
 
 }

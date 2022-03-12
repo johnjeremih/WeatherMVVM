@@ -17,17 +17,22 @@ import com.john.wathermvvm.R
 import com.john.wathermvvm.repository.network.NetworkDataState
 import com.john.wathermvvm.databinding.HomeFragmentBinding
 import com.john.wathermvvm.model.City
-import com.john.wathermvvm.view.adapters.CitiesAdapter
+import com.john.wathermvvm.view.adapters.city.CityAdapter
 import com.john.wathermvvm.viewmodel.HomeViewModel
-import com.john.wathermvvm.xutil.AddressAutoComplete
+import com.john.wathermvvm.util.AddressAutoComplete
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
 
     private val viewModel: HomeViewModel by viewModels()
     private lateinit var binding: HomeFragmentBinding
-    private lateinit var adapter: CitiesAdapter
+    private lateinit var adapter: CityAdapter
+    private val adapterScope = CoroutineScope(Dispatchers.IO)
+
     private var launcher = registerForActivityResult(AddressAutoComplete()) { place ->
 
         if (place != null) {
@@ -78,11 +83,16 @@ class HomeFragment : Fragment() {
 
         viewModel.deleteState.observe(viewLifecycleOwner) {
             when (it) {
-                is NetworkDataState.Success<String> -> {
+                is NetworkDataState.Success<*> -> {
+
                     isProgressBarVisible(false)
-                    Toast.makeText(context, "The city was deleted successfully", Toast.LENGTH_SHORT)
-                        .show()
-                    viewModel.getCurrentList()
+
+                    if (it.data == true){
+                        Toast.makeText(context, "The city was deleted successfully", Toast.LENGTH_SHORT)
+                            .show()
+                        viewModel.getCurrentList()
+                    }
+
 
                 }
                 is NetworkDataState.Error -> {
@@ -105,15 +115,17 @@ class HomeFragment : Fragment() {
     }
 
 
-    private fun setContent(weatherList: List<City>) {
+    private fun setContent(cities: List<City>) {
         initRecyclerView()
-        adapter.submitCityList(weatherList)
+        adapterScope.launch {
+            adapter.submitList(cities)
+        }
 
     }
 
     private fun initRecyclerView() {
 
-        adapter = CitiesAdapter(CitiesAdapter.WeatherListener({
+        adapter = CityAdapter(CityAdapter.WeatherListener({
             val bundleShop = Bundle()
             bundleShop.putLong("cityId", it)
             Navigation.findNavController(binding.root).navigate(R.id.toDetailFragment, bundleShop)

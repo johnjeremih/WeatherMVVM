@@ -5,23 +5,24 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.john.wathermvvm.model.City
+import com.john.wathermvvm.model.Forecast
 
 @Dao
 interface ForecastDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertForecast(forecast: City): Long
+    suspend fun insertForecast(forecast: Forecast): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun updateForecast(forecast: City)
+    suspend fun updateForecast(forecast: Forecast)
 
-    @Query("SELECT * FROM CityTable WHERE cityId = :cityId")
-    suspend fun getForecast(cityId: Long): List<City>
+    @Query("SELECT * FROM forecast WHERE cityId = :cityId")
+    suspend fun getForecast(cityId: Long): List<Forecast>
 
-    @Query("DELETE FROM CityTable WHERE cityId = :cityId")
+    @Query("DELETE FROM forecast WHERE cityId = :cityId")
     suspend fun deleteForecast(cityId: Long)
 
-    @Query("DELETE FROM CityTable")
+    @Query("DELETE FROM forecast")
     suspend fun clearAllForecast()
 
 }

@@ -1,15 +1,15 @@
 package com.john.wathermvvm.repository.cache.forecast
 
-import com.john.wathermvvm.model.City
+import com.john.wathermvvm.model.Forecast
 
 
 interface ForecastDaoService {
 
-    suspend fun insertForecast(forecast: City): Long
+    suspend fun insertForecast(forecast: Forecast): Long
 
-    suspend fun updateForecast(forecast: City)
+    suspend fun updateForecast(forecast: Forecast)
 
-    suspend fun getForecast(cityId: Long): List<City>
+    suspend fun getForecast(cityId: Long): List<Forecast>
 
     suspend fun deleteForecast(cityId: Long)
 

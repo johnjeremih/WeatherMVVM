@@ -29,12 +29,12 @@ constructor(
     private var address = MutableLiveData<Address?>()
     private val _networkState: MutableLiveData<NetworkDataState<List<City>>> =
         MutableLiveData()
-    private val _deleteState: MutableLiveData<NetworkDataState<String>> =
+    private val _deleteState: MutableLiveData<NetworkDataState<Boolean>> =
         MutableLiveData()
 
     private fun getCityCurrentWeather(a: Address?) {
         address.postValue(a)
-        viewModelScope.launch {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
 
                 repository.getCities(a?.latitude, a?.longitude)
@@ -54,7 +54,7 @@ constructor(
     }
 
     fun setCity(address: String?, geocoder: Geocoder) {
-        viewModelScope.launch {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
                 getCityInfo(address, geocoder)
             } catch (e: Exception) {
@@ -68,10 +68,9 @@ constructor(
     private fun getCityInfo(address: String?, geocoder: Geocoder) {
         var addressList: List<Address> = emptyList()
         CoroutineScope(Dispatchers.IO).launch {
-            kotlin.runCatching {
                 try {
                     if (address != null) {
-                        addressList = geocoder.getFromLocationName(address, 1)
+                        addressList = getAddress(geocoder,address)
                     }
 
                 } catch (e: IOException) {
@@ -86,16 +85,22 @@ constructor(
                 }
 
             }
-        }
+
 
     }
+
+    private fun getAddress(geocoder: Geocoder, address: String): List<Address> {
+        return geocoder.getFromLocationName(address, 1)
+    }
+
 
     fun getCurrentList() {
         getCityCurrentWeather(null)
+        _deleteState.value = NetworkDataState.Success(false)
     }
 
     fun deleteUser(userId: Long) {
-        viewModelScope.launch {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
 
                 repository.deleteCity(userId)
@@ -116,7 +121,7 @@ constructor(
     val networkState: LiveData<NetworkDataState<List<City>>>
         get() = _networkState
 
-    val deleteState: LiveData<NetworkDataState<String>>
+    val deleteState: LiveData<NetworkDataState<Boolean>>
         get() = _deleteState
 
 }

@@ -2,7 +2,7 @@ package com.john.wathermvvm.modules
 
 import com.google.gson.GsonBuilder
 import com.john.wathermvvm.BuildConfig
-import com.john.wathermvvm.repository.network.WeatherService
+import com.john.wathermvvm.repository.network.UrlProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,9 +21,10 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun provideRecipeService(): WeatherService {
+    fun provideRetrofit(urlProvider:UrlProvider): Retrofit {
 
         // You can get your Key from this link https://rapidapi.com/weatherbit/api/weather/
+
         val httpClient = OkHttpClient.Builder()
         httpClient.addInterceptor { chain ->
             val request: Request =
@@ -38,11 +39,10 @@ object NetworkModule {
             chain.proceed(request)
         }
         return Retrofit.Builder()
-            .baseUrl("https://weatherbit-v1-mashape.p.rapidapi.com/")
+            .baseUrl(urlProvider.baseUrl)
             .addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
             .client(httpClient.build())
             .build()
-            .create(WeatherService::class.java)
 
     }
 

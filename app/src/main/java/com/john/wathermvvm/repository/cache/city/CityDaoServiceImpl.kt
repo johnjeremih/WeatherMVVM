@@ -7,12 +7,12 @@ constructor(
     private val cityDao: CityDao
 ): CityDaoService {
 
-    override suspend fun insertCity(mainWeather: City): Long {
-        return cityDao.insertCity(mainWeather)
+    override suspend fun insertCity(city: City): Long {
+        return cityDao.insertCity(city)
     }
 
     override suspend fun updateCity(city: City) {
-         cityDao.update(city)
+        cityDao.update(city)
     }
 
     override suspend fun getCities(): List<City> {
@@ -25,7 +25,6 @@ constructor(
 
     override suspend fun deleteCity(cityId: Long) {
         return cityDao.deleteCity(cityId)
-
     }
 
     override suspend fun clearALL() {
