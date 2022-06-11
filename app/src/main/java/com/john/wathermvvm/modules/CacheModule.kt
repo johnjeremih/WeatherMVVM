@@ -2,11 +2,17 @@ package com.john.wathermvvm.modules
 
 import android.content.Context
 import androidx.room.Room
-import com.john.wathermvvm.repository.cache.*
+import com.john.wathermvvm.repository.cache.CityDataSource
+import com.john.wathermvvm.repository.cache.CityDataSourceImpl
+import com.john.wathermvvm.repository.cache.Database
+import com.john.wathermvvm.repository.cache.ForecastDataSource
+import com.john.wathermvvm.repository.cache.ForecastDataSourceImpl
 import com.john.wathermvvm.repository.cache.city.CityDao
 import com.john.wathermvvm.repository.cache.city.CityDaoService
 import com.john.wathermvvm.repository.cache.city.CityDaoServiceImpl
-import com.john.wathermvvm.repository.cache.forecast.*
+import com.john.wathermvvm.repository.cache.forecast.ForecastDao
+import com.john.wathermvvm.repository.cache.forecast.ForecastDaoService
+import com.john.wathermvvm.repository.cache.forecast.ForecastDaoServiceImpl
 import com.john.wathermvvm.repository.mapper.CityMapper
 import com.john.wathermvvm.repository.mapper.ForecastMapper
 import dagger.Module
@@ -28,7 +34,7 @@ object CacheModule {
 
     @Singleton
     @Provides
-    fun provideCitiesDb(@ApplicationContext context: Context): Database {
+    fun provideDatabase(@ApplicationContext context: Context): Database {
         return Room
             .databaseBuilder(
                 context,
@@ -38,8 +44,6 @@ object CacheModule {
             .fallbackToDestructiveMigration()
             .build()
     }
-
-
     @Singleton
     @Provides
     fun provideCitiesDao(database: Database): CityDao {
@@ -48,7 +52,7 @@ object CacheModule {
 
     @Singleton
     @Provides
-    fun provideforcastDao(database: Database): ForecastDao {
+    fun provideForecastDao(database: Database): ForecastDao {
         return database.forecastDao()
     }
 
@@ -70,38 +74,20 @@ object CacheModule {
 
     @Singleton
     @Provides
-    fun provideCacheDataSource(
+    fun provideCityDataSource(
         cityDaoService: CityDaoService,
-        forecastDaoService: ForecastDaoService,
-        forecastMapper: ForecastMapper,
         cityMapper: CityMapper
-    ): DataSource {
-        return DataSourceImpl(cityDaoService, forecastDaoService,forecastMapper,cityMapper)
+    ): CityDataSource {
+        return CityDataSourceImpl(cityDaoService, cityMapper)
+    }
+
+    @Singleton
+    @Provides
+    fun provideForecastDataSource(
+        forecastDaoService: ForecastDaoService,
+        forecastMapper: ForecastMapper
+    ): ForecastDataSource {
+        return ForecastDataSourceImpl(forecastDaoService, forecastMapper)
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

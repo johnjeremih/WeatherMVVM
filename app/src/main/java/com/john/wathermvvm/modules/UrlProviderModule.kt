@@ -12,9 +12,5 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 abstract class UrlProviderModule {
 
-
-      @Singleton
-      @Binds
-      abstract fun provideUrlProvider(urlMainProvider: UrlMainProvider): UrlProvider
-
+  @Singleton @Binds abstract fun provideUrlProvider(urlMainProvider: UrlMainProvider): UrlProvider
 }

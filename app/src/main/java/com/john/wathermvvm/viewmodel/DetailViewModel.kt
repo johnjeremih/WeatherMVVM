@@ -7,59 +7,54 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.john.wathermvvm.model.City
 import com.john.wathermvvm.model.Forecast
-import com.john.wathermvvm.repository.Repository
 import com.john.wathermvvm.repository.network.NetworkDataState
+import com.john.wathermvvm.repository.usecases.city.CityRepository
+import com.john.wathermvvm.repository.usecases.forecast.ForecastRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.io.IOException
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class DetailViewModel
 @Inject
 constructor(
-    private var repository: Repository
+    private var cityRepository: CityRepository,
+    private var forecastRepository: ForecastRepository
 ) : ViewModel() {
-    private val _cityNetworkState: MutableLiveData<NetworkDataState<City>> = MutableLiveData()
-    private val _forecastNetworkState: MutableLiveData<NetworkDataState<List<Forecast>>> = MutableLiveData()
+  private val _cityNetworkState: MutableLiveData<NetworkDataState<City>> = MutableLiveData()
+  private val _forecastNetworkState: MutableLiveData<NetworkDataState<List<Forecast>>> =
+      MutableLiveData()
 
-    fun getCity(cityId: Long?,isRefreshing: Boolean) {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
+  fun getCity(cityId: Long?, isRefreshing: Boolean) {
+    CoroutineScope(Dispatchers.IO).launch {
+      try {
 
-                if (cityId != null) {
-                    repository.getCity(cityId = cityId,isRefreshing)
-                        .onEach {
-                            _cityNetworkState.value = it
-                        }
-                        .launchIn(viewModelScope)
+        if (cityId != null) {
+          cityRepository
+              .getCity(cityId = cityId, isRefreshing)
+              .onEach { _cityNetworkState.value = it }
+              .launchIn(viewModelScope)
 
-                    repository.getForecast(cityId, isRefreshing)
-                        .onEach {
-                            _forecastNetworkState.value = it
-                        }
-
-                        .launchIn(viewModelScope)
-                }
-
-            } catch (e: Exception) {
-                Log.e("DetailViewModel", "getCity: Exception: ${e}, ${e.cause}")
-                e.printStackTrace()
-            }
-
+          forecastRepository
+              .getForecast(cityId, isRefreshing)
+              .onEach { _forecastNetworkState.value = it }
+              .launchIn(viewModelScope)
         }
-
-
+      } catch (e: IOException) {
+        Log.e("DetailViewModel", "getCity: Exception: $e, ${e.cause}")
+        e.printStackTrace()
+      }
     }
+  }
 
+  val cityNetworkState: LiveData<NetworkDataState<City>>
+    get() = _cityNetworkState
 
-    val cityNetworkState: LiveData<NetworkDataState<City>>
-        get() = _cityNetworkState
-
-    val forecastNetworkState: LiveData<NetworkDataState<List<Forecast>>>
-        get() = _forecastNetworkState
-
+  val forecastNetworkState: LiveData<NetworkDataState<List<Forecast>>>
+    get() = _forecastNetworkState
 }
