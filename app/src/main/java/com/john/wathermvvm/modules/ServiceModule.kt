@@ -1,8 +1,8 @@
 package com.john.wathermvvm.modules
 
-import com.john.wathermvvm.repository.network.NetworkData
-import com.john.wathermvvm.repository.network.NetworkDataImpl
-import com.john.wathermvvm.repository.service.WeatherService
+import com.john.wathermvvm.data.remote.RemoteDataSource
+import com.john.wathermvvm.data.remote.RemoteDataSourceImpl
+import com.john.wathermvvm.data.service.WeatherService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,7 +17,7 @@ object ServiceModule {
   @Provides
   fun provideWeatherRepository(
       weatherService: WeatherService,
-  ): NetworkData {
-    return NetworkDataImpl(weatherService = weatherService)
+  ): RemoteDataSource {
+    return RemoteDataSourceImpl(weatherService = weatherService)
   }
 }

@@ -14,9 +14,9 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.john.wathermvvm.R
+import com.john.wathermvvm.data.remote.NetworkDataState
 import com.john.wathermvvm.databinding.HomeFragmentBinding
 import com.john.wathermvvm.model.City
-import com.john.wathermvvm.repository.network.NetworkDataState
 import com.john.wathermvvm.util.AddressAutoComplete
 import com.john.wathermvvm.view.adapters.city.CityAdapter
 import com.john.wathermvvm.viewmodel.HomeViewModel
@@ -33,13 +33,12 @@ class HomeFragment : Fragment() {
   private lateinit var adapter: CityAdapter
   private val adapterScope = CoroutineScope(Dispatchers.IO)
 
-  private var launcher =
-      registerForActivityResult(AddressAutoComplete()) { place ->
+  private var launcher = registerForActivityResult(AddressAutoComplete()) { place ->
         if (place != null) {
           val geocoder = Geocoder(activity)
           viewModel.setCity(place.address, geocoder)
         }
-      }
+  }
 
   override fun onCreateView(
       inflater: LayoutInflater,

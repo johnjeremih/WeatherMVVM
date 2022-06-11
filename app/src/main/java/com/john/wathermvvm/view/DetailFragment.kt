@@ -15,7 +15,7 @@ import com.john.wathermvvm.R
 import com.john.wathermvvm.databinding.DetailFragmentBinding
 import com.john.wathermvvm.model.City
 import com.john.wathermvvm.model.Forecast
-import com.john.wathermvvm.repository.network.NetworkDataState
+import com.john.wathermvvm.data.remote.NetworkDataState
 import com.john.wathermvvm.util.TimeAgoFormatter
 import com.john.wathermvvm.view.adapters.forecast.ForecastAdapter
 import com.john.wathermvvm.viewmodel.DetailViewModel

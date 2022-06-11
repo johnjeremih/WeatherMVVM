@@ -1,6 +1,6 @@
 package com.john.wathermvvm.modules
 
-import com.john.wathermvvm.repository.service.WeatherService
+import com.john.wathermvvm.data.service.WeatherService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -1,7 +1,7 @@
 package com.john.wathermvvm.modules
 
-import com.john.wathermvvm.repository.network.UrlMainProvider
-import com.john.wathermvvm.repository.network.UrlProvider
+import com.john.wathermvvm.data.remote.UrlMainProvider
+import com.john.wathermvvm.data.remote.UrlProvider
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

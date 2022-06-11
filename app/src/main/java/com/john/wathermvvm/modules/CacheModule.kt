@@ -2,19 +2,19 @@ package com.john.wathermvvm.modules
 
 import android.content.Context
 import androidx.room.Room
-import com.john.wathermvvm.repository.cache.CityDataSource
-import com.john.wathermvvm.repository.cache.CityDataSourceImpl
-import com.john.wathermvvm.repository.cache.Database
-import com.john.wathermvvm.repository.cache.ForecastDataSource
-import com.john.wathermvvm.repository.cache.ForecastDataSourceImpl
-import com.john.wathermvvm.repository.cache.city.CityDao
-import com.john.wathermvvm.repository.cache.city.CityDaoService
-import com.john.wathermvvm.repository.cache.city.CityDaoServiceImpl
-import com.john.wathermvvm.repository.cache.forecast.ForecastDao
-import com.john.wathermvvm.repository.cache.forecast.ForecastDaoService
-import com.john.wathermvvm.repository.cache.forecast.ForecastDaoServiceImpl
-import com.john.wathermvvm.repository.mapper.CityMapper
-import com.john.wathermvvm.repository.mapper.ForecastMapper
+import com.john.wathermvvm.data.local.datasource.city.LocalCityDataSource
+import com.john.wathermvvm.data.local.datasource.city.LocalCityDataSourceImpl
+import com.john.wathermvvm.data.local.Database
+import com.john.wathermvvm.data.local.datasource.forecast.LocalForecastDataSource
+import com.john.wathermvvm.data.local.datasource.forecast.LocalForecastDataSourceImpl
+import com.john.wathermvvm.data.local.cache.city.CityDao
+import com.john.wathermvvm.data.local.cache.city.CityDaoService
+import com.john.wathermvvm.data.local.cache.city.CityDaoServiceImpl
+import com.john.wathermvvm.data.local.cache.forecast.ForecastDao
+import com.john.wathermvvm.data.local.cache.forecast.ForecastDaoService
+import com.john.wathermvvm.data.local.cache.forecast.ForecastDaoServiceImpl
+import com.john.wathermvvm.util.mapper.CityMapper
+import com.john.wathermvvm.util.mapper.ForecastMapper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -77,8 +77,8 @@ object CacheModule {
     fun provideCityDataSource(
         cityDaoService: CityDaoService,
         cityMapper: CityMapper
-    ): CityDataSource {
-        return CityDataSourceImpl(cityDaoService, cityMapper)
+    ): LocalCityDataSource {
+        return LocalCityDataSourceImpl(cityDaoService, cityMapper)
     }
 
     @Singleton
@@ -86,8 +86,7 @@ object CacheModule {
     fun provideForecastDataSource(
         forecastDaoService: ForecastDaoService,
         forecastMapper: ForecastMapper
-    ): ForecastDataSource {
-        return ForecastDataSourceImpl(forecastDaoService, forecastMapper)
+    ): LocalForecastDataSource {
+        return LocalForecastDataSourceImpl(forecastDaoService, forecastMapper)
     }
-
 }

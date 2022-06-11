@@ -7,9 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.john.wathermvvm.model.City
 import com.john.wathermvvm.model.Forecast
-import com.john.wathermvvm.repository.network.NetworkDataState
-import com.john.wathermvvm.repository.usecases.city.CityRepository
-import com.john.wathermvvm.repository.usecases.forecast.ForecastRepository
+import com.john.wathermvvm.data.remote.NetworkDataState
+import com.john.wathermvvm.data.repositories.city.CityRepository
+import com.john.wathermvvm.data.repositories.forecast.ForecastRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.io.IOException
 import javax.inject.Inject

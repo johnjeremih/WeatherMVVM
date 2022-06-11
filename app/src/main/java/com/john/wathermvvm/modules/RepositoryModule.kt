@@ -1,12 +1,12 @@
 package com.john.wathermvvm.modules
 
-import com.john.wathermvvm.repository.cache.CityDataSource
-import com.john.wathermvvm.repository.cache.ForecastDataSource
-import com.john.wathermvvm.repository.network.NetworkData
-import com.john.wathermvvm.repository.usecases.city.CityRepository
-import com.john.wathermvvm.repository.usecases.city.CityRepositoryImpl
-import com.john.wathermvvm.repository.usecases.forecast.ForecastRepository
-import com.john.wathermvvm.repository.usecases.forecast.ForecastRepositoryImpl
+import com.john.wathermvvm.data.local.datasource.city.LocalCityDataSource
+import com.john.wathermvvm.data.local.datasource.forecast.LocalForecastDataSource
+import com.john.wathermvvm.data.remote.RemoteDataSource
+import com.john.wathermvvm.data.repositories.city.CityRepository
+import com.john.wathermvvm.data.repositories.city.CityRepositoryImpl
+import com.john.wathermvvm.data.repositories.forecast.ForecastRepository
+import com.john.wathermvvm.data.repositories.forecast.ForecastRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,20 +20,20 @@ object RepositoryModule {
   @Singleton
   @Provides
   fun setCityRepository(
-      cityDataSource: CityDataSource,
-      forecastDataSource: ForecastDataSource,
-      networkData: NetworkData
+      localCityDataSource: LocalCityDataSource,
+      localForecastDataSource: LocalForecastDataSource,
+      remoteDataSource: RemoteDataSource
   ): CityRepository {
-    return CityRepositoryImpl(cityDataSource, forecastDataSource, networkData)
+    return CityRepositoryImpl(localCityDataSource, localForecastDataSource, remoteDataSource)
   }
 
   @Singleton
   @Provides
   fun setForecastRepository(
-      cityDataSource: CityDataSource,
-      forecastDataSource: ForecastDataSource,
-      networkData: NetworkData
+      localCityDataSource: LocalCityDataSource,
+      localForecastDataSource: LocalForecastDataSource,
+      remoteDataSource: RemoteDataSource
   ): ForecastRepository {
-    return ForecastRepositoryImpl(cityDataSource, forecastDataSource, networkData)
+    return ForecastRepositoryImpl(localCityDataSource, localForecastDataSource, remoteDataSource)
   }
 }

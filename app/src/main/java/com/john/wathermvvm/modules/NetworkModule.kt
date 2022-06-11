@@ -2,7 +2,7 @@ package com.john.wathermvvm.modules
 
 import com.google.gson.GsonBuilder
 import com.john.wathermvvm.BuildConfig
-import com.john.wathermvvm.repository.network.UrlProvider
+import com.john.wathermvvm.data.remote.UrlProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,13 +25,12 @@ object NetworkModule {
 
     val httpClient = OkHttpClient.Builder()
     httpClient.addInterceptor { chain ->
-      val request: Request =
-          chain
-              .request()
-              .newBuilder()
-              .addHeader("x-rapidapi-host", "weatherbit-v1-mashape.p.rapidapi.com")
-              .addHeader("x-rapidapi-key", BuildConfig.RAPIDAPI_KEY)
-              .build()
+      val request: Request = chain
+          .request()
+          .newBuilder()
+          .addHeader("x-rapidapi-host", "weatherbit-v1-mashape.p.rapidapi.com")
+          .addHeader("x-rapidapi-key", BuildConfig.RAPIDAPI_KEY)
+          .build()
       chain.proceed(request)
     }
     return Retrofit.Builder()
