@@ -28,116 +28,119 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
 
-  private val viewModel: HomeViewModel by viewModels()
-  private lateinit var binding: HomeFragmentBinding
-  private lateinit var adapter: CityAdapter
-  private val adapterScope = CoroutineScope(Dispatchers.IO)
+    private val viewModel: HomeViewModel by viewModels()
+    private lateinit var binding: HomeFragmentBinding
+    private lateinit var adapter: CityAdapter
+    private val adapterScope = CoroutineScope(Dispatchers.IO)
 
-  private var launcher = registerForActivityResult(AddressAutoComplete()) { place ->
-        if (place != null) {
-          val geocoder = Geocoder(activity)
-          viewModel.setCity(place.address, geocoder)
+    private var launcher =
+        registerForActivityResult(AddressAutoComplete()) { place ->
+            if (place != null) {
+                val geocoder = Geocoder(activity)
+                viewModel.setCity(place.address, geocoder)
+            }
         }
-  }
 
-  override fun onCreateView(
-      inflater: LayoutInflater,
-      container: ViewGroup?,
-      savedInstanceState: Bundle?
-  ): View {
-    binding = HomeFragmentBinding.inflate(inflater, container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = HomeFragmentBinding.inflate(inflater, container, false)
 
-    return binding.root
-  }
-
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    super.onViewCreated(view, savedInstanceState)
-
-    viewModel.getCurrentList()
-    setObservers()
-    binding.searchView.setOnClickListener { launcher.launch() }
-  }
-
-  private fun setObservers() {
-    viewModel.networkState.observe(viewLifecycleOwner) {
-      when (it) {
-        is NetworkDataState.Success<List<City>> -> {
-          isProgressBarVisible(false)
-          setContent(it.data)
-        }
-        is NetworkDataState.Error -> {
-          isProgressBarVisible(false)
-          binding.emptyText.text = it.exception.message
-          binding.emptyText.visibility = View.VISIBLE
-        }
-        is NetworkDataState.Loading -> {
-          isProgressBarVisible(true)
-        }
-      }
+        return binding.root
     }
 
-    viewModel.deleteState.observe(viewLifecycleOwner) {
-      when (it) {
-        is NetworkDataState.Success<*> -> {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-          isProgressBarVisible(false)
-
-          if (it.data == true) {
-            Toast.makeText(context, "The city was deleted successfully", Toast.LENGTH_SHORT).show()
-            viewModel.getCurrentList()
-          }
-        }
-        is NetworkDataState.Error -> {
-          isProgressBarVisible(false)
-          binding.emptyText.text = it.exception.message
-          binding.emptyText.visibility = View.VISIBLE
-        }
-        is NetworkDataState.Loading -> {
-          isProgressBarVisible(true)
-        }
-      }
+        viewModel.getCurrentList()
+        setObservers()
+        binding.searchView.setOnClickListener { launcher.launch() }
     }
-  }
 
-  private fun isProgressBarVisible(b: Boolean) {
-    binding.progressBar.visibility = if (b) View.VISIBLE else View.GONE
-  }
-
-  private fun setContent(cities: List<City>) {
-    initRecyclerView()
-    adapterScope.launch { adapter.submitList(cities) }
-  }
-
-  private fun initRecyclerView() {
-
-    adapter =
-        CityAdapter(
-            CityAdapter.WeatherListener(
-                {
-                  val bundleShop = Bundle()
-                  bundleShop.putLong("cityId", it)
-                  Navigation.findNavController(binding.root)
-                      .navigate(R.id.toDetailFragment, bundleShop)
-                },
-                { showDialog(it) }))
-
-    val linearLayoutManager: RecyclerView.LayoutManager =
-        LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-    binding.recyclerView.layoutManager = linearLayoutManager
-    binding.recyclerView.adapter = adapter
-  }
-
-  private fun showDialog(it: Long) {
-    val alertDialog = AlertDialog.Builder(activity)
-    alertDialog
-        .apply {
-          setTitle("Are you sure you want to delete this city?")
-          setPositiveButton("Yes") { _, _ -> run { viewModel.deleteUser(it) } }
-          setNegativeButton("No") { _, _ -> }
-
-          setCancelable(false)
+    private fun setObservers() {
+        viewModel.networkState.observe(viewLifecycleOwner) {
+            when (it) {
+                is NetworkDataState.Success<List<City>> -> {
+                    isProgressBarVisible(false)
+                    setContent(it.data)
+                }
+                is NetworkDataState.Error -> {
+                    isProgressBarVisible(false)
+                    binding.emptyText.text = it.exception.message
+                    binding.emptyText.visibility = View.VISIBLE
+                }
+                is NetworkDataState.Loading -> {
+                    isProgressBarVisible(true)
+                }
+            }
         }
-        .create()
-        .show()
-  }
+
+        viewModel.deleteState.observe(viewLifecycleOwner) {
+            when (it) {
+                is NetworkDataState.Success<*> -> {
+
+                    isProgressBarVisible(false)
+
+                    if (it.data == true) {
+                        Toast.makeText(context, "The city was deleted successfully", Toast.LENGTH_SHORT).show()
+                        viewModel.getCurrentList()
+                    }
+                }
+                is NetworkDataState.Error -> {
+                    isProgressBarVisible(false)
+                    binding.emptyText.text = it.exception.message
+                    binding.emptyText.visibility = View.VISIBLE
+                }
+                is NetworkDataState.Loading -> {
+                    isProgressBarVisible(true)
+                }
+            }
+        }
+    }
+
+    private fun isProgressBarVisible(b: Boolean) {
+        binding.progressBar.visibility = if (b) View.VISIBLE else View.GONE
+    }
+
+    private fun setContent(cities: List<City>) {
+        initRecyclerView()
+        adapterScope.launch { adapter.submitList(cities) }
+    }
+
+    private fun initRecyclerView() {
+
+        adapter =
+            CityAdapter(
+                CityAdapter.WeatherListener(
+                    {
+                        val bundleShop = Bundle()
+                        bundleShop.putLong("cityId", it)
+                        Navigation.findNavController(binding.root)
+                            .navigate(R.id.toDetailFragment, bundleShop)
+                    },
+                    { showDialog(it) }
+                )
+            )
+
+        val linearLayoutManager: RecyclerView.LayoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        binding.recyclerView.layoutManager = linearLayoutManager
+        binding.recyclerView.adapter = adapter
+    }
+
+    private fun showDialog(it: Long) {
+        val alertDialog = AlertDialog.Builder(activity)
+        alertDialog
+            .apply {
+                setTitle("Are you sure you want to delete this city?")
+                setPositiveButton("Yes") { _, _ -> run { viewModel.deleteUser(it) } }
+                setNegativeButton("No") { _, _ -> }
+
+                setCancelable(false)
+            }
+            .create()
+            .show()
+    }
 }

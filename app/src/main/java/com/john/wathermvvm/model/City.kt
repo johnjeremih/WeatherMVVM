@@ -22,7 +22,7 @@ data class City(
     @ColumnInfo(name = "timeStamp") @SerializedName("timestamp_local") var timeStamp: String?,
     @ColumnInfo(name = "dateTime") @SerializedName("datetime") var dateTime: String?,
 ) {
-  fun getTempString(): String {
-    return (tempInC?.substringBefore(".") ?: "") + "°F"
-  }
+    fun getTempString(): String {
+        return (tempInC?.substringBefore(".") ?: "") + "°F"
+    }
 }

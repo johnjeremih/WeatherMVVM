@@ -21,15 +21,15 @@ data class Forecast(
     @ColumnInfo(name = "highTemp") @SerializedName("high_temp") var highTemp: String?,
     @ColumnInfo(name = "lowTemp") @SerializedName("low_temp") var lowTemp: String?,
 ) {
-  fun getTempString(): String {
-    return (tempInC?.substringBefore(".") ?: "") + "°F"
-  }
+    fun getTempString(): String {
+        return (tempInC?.substringBefore(".") ?: "") + "°F"
+    }
 
-  fun getLowTempString(): String {
-    return (lowTemp?.substringBefore(".") ?: "") + "°F"
-  }
+    fun getLowTempString(): String {
+        return (lowTemp?.substringBefore(".") ?: "") + "°F"
+    }
 
-  fun getHighTempString(): String {
-    return (highTemp?.substringBefore(".") ?: "") + "°F"
-  }
+    fun getHighTempString(): String {
+        return (highTemp?.substringBefore(".") ?: "") + "°F"
+    }
 }

@@ -8,7 +8,6 @@ import retrofit2.http.Query
 
 interface WeatherService {
 
-
     @GET("current")
     suspend fun getCurrentWeather(
         @Query("lat") lat: Double,
@@ -23,4 +22,3 @@ interface WeatherService {
         @Query("units") lang: String
     ): DataResponse<Forecast>
 }
-

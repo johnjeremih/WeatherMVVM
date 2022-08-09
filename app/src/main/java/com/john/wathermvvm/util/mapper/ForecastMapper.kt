@@ -16,5 +16,7 @@ class ForecastMapper @Inject constructor() : EntityMapper<Forecast, Forecast?, L
             timeStamp = entity.timeStamp,
             highTemp = entity.highTemp,
             lowTemp = entity.lowTemp,
-            dateTime = entity.dateTime)}
+            dateTime = entity.dateTime
+        )
+    }
 }

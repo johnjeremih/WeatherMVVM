@@ -2,17 +2,17 @@ package com.john.wathermvvm.modules
 
 import android.content.Context
 import androidx.room.Room
-import com.john.wathermvvm.data.local.datasource.city.LocalCityDataSource
-import com.john.wathermvvm.data.local.datasource.city.LocalCityDataSourceImpl
 import com.john.wathermvvm.data.local.Database
-import com.john.wathermvvm.data.local.datasource.forecast.LocalForecastDataSource
-import com.john.wathermvvm.data.local.datasource.forecast.LocalForecastDataSourceImpl
 import com.john.wathermvvm.data.local.cache.city.CityDao
 import com.john.wathermvvm.data.local.cache.city.CityDaoService
 import com.john.wathermvvm.data.local.cache.city.CityDaoServiceImpl
 import com.john.wathermvvm.data.local.cache.forecast.ForecastDao
 import com.john.wathermvvm.data.local.cache.forecast.ForecastDaoService
 import com.john.wathermvvm.data.local.cache.forecast.ForecastDaoServiceImpl
+import com.john.wathermvvm.data.local.datasource.city.LocalCityDataSource
+import com.john.wathermvvm.data.local.datasource.city.LocalCityDataSourceImpl
+import com.john.wathermvvm.data.local.datasource.forecast.LocalForecastDataSource
+import com.john.wathermvvm.data.local.datasource.forecast.LocalForecastDataSourceImpl
 import com.john.wathermvvm.util.mapper.CityMapper
 import com.john.wathermvvm.util.mapper.ForecastMapper
 import dagger.Module

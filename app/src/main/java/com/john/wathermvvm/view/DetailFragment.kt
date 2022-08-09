@@ -12,10 +12,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.john.wathermvvm.R
+import com.john.wathermvvm.data.remote.NetworkDataState
 import com.john.wathermvvm.databinding.DetailFragmentBinding
 import com.john.wathermvvm.model.City
 import com.john.wathermvvm.model.Forecast
-import com.john.wathermvvm.data.remote.NetworkDataState
 import com.john.wathermvvm.util.TimeAgoFormatter
 import com.john.wathermvvm.view.adapters.forecast.ForecastAdapter
 import com.john.wathermvvm.viewmodel.DetailViewModel
@@ -28,118 +28,118 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class DetailFragment : Fragment() {
 
-  private var cityId: Long? = null
-  private lateinit var binding: DetailFragmentBinding
-  private val viewModel: DetailViewModel by viewModels()
-  private val adapterScope = CoroutineScope(Dispatchers.IO)
+    private var cityId: Long? = null
+    private lateinit var binding: DetailFragmentBinding
+    private val viewModel: DetailViewModel by viewModels()
+    private val adapterScope = CoroutineScope(Dispatchers.IO)
 
-  private val format: TimeAgoFormatter = TimeAgoFormatter()
-  private lateinit var adapter: ForecastAdapter
+    private val format: TimeAgoFormatter = TimeAgoFormatter()
+    private lateinit var adapter: ForecastAdapter
 
-  override fun onCreateView(
-      inflater: LayoutInflater,
-      container: ViewGroup?,
-      savedInstanceState: Bundle?
-  ): View {
-    binding = DetailFragmentBinding.inflate(inflater, container, false)
-    return binding.root
-  }
-
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    super.onViewCreated(view, savedInstanceState)
-
-    cityId = arguments?.getLong("cityId")
-    viewModel.getCity(cityId, false)
-
-    binding.detailToolbar.inflateMenu(R.menu.refresh)
-
-    binding.detailToolbar.setOnMenuItemClickListener {
-      when (it.itemId) {
-        R.id.menu_refresh -> {
-          viewModel.getCity(cityId, true)
-        }
-      }
-      true
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = DetailFragmentBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    binding.detailToolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
-    binding.detailToolbar.setNavigationOnClickListener {
-      Navigation.findNavController(binding.root).navigateUp()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        cityId = arguments?.getLong("cityId")
+        viewModel.getCity(cityId, false)
+
+        binding.detailToolbar.inflateMenu(R.menu.refresh)
+
+        binding.detailToolbar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.menu_refresh -> {
+                    viewModel.getCity(cityId, true)
+                }
+            }
+            true
+        }
+
+        binding.detailToolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
+        binding.detailToolbar.setNavigationOnClickListener {
+            Navigation.findNavController(binding.root).navigateUp()
+        }
+
+        setObservers()
     }
 
-    setObservers()
-  }
+    private fun setObservers() {
 
-  private fun setObservers() {
+        viewModel.cityNetworkState.observe(viewLifecycleOwner) {
+            when (it) {
+                is NetworkDataState.Success<City> -> {
+                    isProgressBarVisible(false)
+                    setContent(it.data)
+                }
+                is NetworkDataState.Error -> {
+                    isProgressBarVisible(false)
+                    Snackbar.make(requireView(), it.exception.message.toString(), Snackbar.LENGTH_SHORT)
+                        .show()
+                }
+                is NetworkDataState.Loading -> {
+                    isProgressBarVisible(true)
+                }
+            }
+        }
 
-    viewModel.cityNetworkState.observe(viewLifecycleOwner) {
-      when (it) {
-        is NetworkDataState.Success<City> -> {
-          isProgressBarVisible(false)
-          setContent(it.data)
+        viewModel.forecastNetworkState.observe(viewLifecycleOwner) {
+            when (it) {
+                is NetworkDataState.Success<List<Forecast>> -> {
+                    isProgressBarVisible(false)
+                    setForecast(it.data)
+                }
+                is NetworkDataState.Error -> {
+                    isProgressBarVisible(false)
+                    Snackbar.make(requireView(), it.exception.message.toString(), Snackbar.LENGTH_SHORT)
+                        .show()
+                }
+                is NetworkDataState.Loading -> {
+                    isProgressBarVisible(true)
+                }
+            }
         }
-        is NetworkDataState.Error -> {
-          isProgressBarVisible(false)
-          Snackbar.make(requireView(), it.exception.message.toString(), Snackbar.LENGTH_SHORT)
-              .show()
-        }
-        is NetworkDataState.Loading -> {
-          isProgressBarVisible(true)
-        }
-      }
     }
 
-    viewModel.forecastNetworkState.observe(viewLifecycleOwner) {
-      when (it) {
-        is NetworkDataState.Success<List<Forecast>> -> {
-          isProgressBarVisible(false)
-          setForecast(it.data)
-        }
-        is NetworkDataState.Error -> {
-          isProgressBarVisible(false)
-          Snackbar.make(requireView(), it.exception.message.toString(), Snackbar.LENGTH_SHORT)
-              .show()
-        }
-        is NetworkDataState.Loading -> {
-          isProgressBarVisible(true)
-        }
-      }
-    }
-  }
+    private fun setForecast(data: List<Forecast>) {
 
-  private fun setForecast(data: List<Forecast>) {
+        adapter = ForecastAdapter()
+        val linearLayoutManager: RecyclerView.LayoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        binding.detailRecyclerView.layoutManager = linearLayoutManager
+        binding.detailRecyclerView.adapter = adapter
 
-    adapter = ForecastAdapter()
-    val linearLayoutManager: RecyclerView.LayoutManager =
-        LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-    binding.detailRecyclerView.layoutManager = linearLayoutManager
-    binding.detailRecyclerView.adapter = adapter
-
-    adapterScope.launch { adapter.submitList(data) }
-  }
-
-  private fun isProgressBarVisible(b: Boolean) {
-    binding.detailProgressbar.visibility = if (b) View.VISIBLE else View.GONE
-  }
-
-  private fun setContent(weatherModel: City) {
-
-    var formattedDate = format.format(weatherModel.lastUpdate)
-    if (formattedDate.contains("moments")) {
-      formattedDate = "1m"
+        adapterScope.launch { adapter.submitList(data) }
     }
 
-    val imageUrl = getUrl(weatherModel.weather?.icon.toString(), binding.root.resources)
-    Picasso.get().load(imageUrl).into(binding.detailCityIcon)
+    private fun isProgressBarVisible(b: Boolean) {
+        binding.detailProgressbar.visibility = if (b) View.VISIBLE else View.GONE
+    }
 
-    binding.detailCityName.text = weatherModel.cityName
-    binding.detailCityTemperature.text = weatherModel.getTempString()
-    binding.detailCityTime.text = formattedDate
-    binding.detailCityDescription.text = weatherModel.weather?.description ?: ""
-    binding.detailToolbar.title = weatherModel.cityName
-  }
+    private fun setContent(weatherModel: City) {
 
-  private fun getUrl(icon: String, res: Resources): String {
-    return java.lang.String.format(res.getString(R.string.image_holder), icon)
-  }
+        var formattedDate = format.format(weatherModel.lastUpdate)
+        if (formattedDate.contains("moments")) {
+            formattedDate = "1m"
+        }
+
+        val imageUrl = getUrl(weatherModel.weather?.icon.toString(), binding.root.resources)
+        Picasso.get().load(imageUrl).into(binding.detailCityIcon)
+
+        binding.detailCityName.text = weatherModel.cityName
+        binding.detailCityTemperature.text = weatherModel.getTempString()
+        binding.detailCityTime.text = formattedDate
+        binding.detailCityDescription.text = weatherModel.weather?.description ?: ""
+        binding.detailToolbar.title = weatherModel.cityName
+    }
+
+    private fun getUrl(icon: String, res: Resources): String {
+        return java.lang.String.format(res.getString(R.string.image_holder), icon)
+    }
 }

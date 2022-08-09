@@ -17,23 +17,23 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object RepositoryModule {
 
-  @Singleton
-  @Provides
-  fun setCityRepository(
-      localCityDataSource: LocalCityDataSource,
-      localForecastDataSource: LocalForecastDataSource,
-      remoteDataSource: RemoteDataSource
-  ): CityRepository {
-    return CityRepositoryImpl(localCityDataSource, localForecastDataSource, remoteDataSource)
-  }
+    @Singleton
+    @Provides
+    fun setCityRepository(
+        localCityDataSource: LocalCityDataSource,
+        localForecastDataSource: LocalForecastDataSource,
+        remoteDataSource: RemoteDataSource
+    ): CityRepository {
+        return CityRepositoryImpl(localCityDataSource, localForecastDataSource, remoteDataSource)
+    }
 
-  @Singleton
-  @Provides
-  fun setForecastRepository(
-      localCityDataSource: LocalCityDataSource,
-      localForecastDataSource: LocalForecastDataSource,
-      remoteDataSource: RemoteDataSource
-  ): ForecastRepository {
-    return ForecastRepositoryImpl(localCityDataSource, localForecastDataSource, remoteDataSource)
-  }
+    @Singleton
+    @Provides
+    fun setForecastRepository(
+        localCityDataSource: LocalCityDataSource,
+        localForecastDataSource: LocalForecastDataSource,
+        remoteDataSource: RemoteDataSource
+    ): ForecastRepository {
+        return ForecastRepositoryImpl(localCityDataSource, localForecastDataSource, remoteDataSource)
+    }
 }

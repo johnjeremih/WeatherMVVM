@@ -13,11 +13,11 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object ServiceModule {
 
-  @Singleton
-  @Provides
-  fun provideWeatherRepository(
-      weatherService: WeatherService,
-  ): RemoteDataSource {
-    return RemoteDataSourceImpl(weatherService = weatherService)
-  }
+    @Singleton
+    @Provides
+    fun provideWeatherRepository(
+        weatherService: WeatherService,
+    ): RemoteDataSource {
+        return RemoteDataSourceImpl(weatherService = weatherService)
+    }
 }
