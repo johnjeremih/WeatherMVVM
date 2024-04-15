@@ -70,7 +70,7 @@ constructor(
         CoroutineScope(Dispatchers.IO).launch {
                 try {
                     if (address != null) {
-                        addressList = getAddress(geocoder,address)
+                        addressList = getAddress(geocoder,address)?.toList()!!
                     }
 
                 } catch (e: IOException) {
@@ -89,7 +89,7 @@ constructor(
 
     }
 
-    private fun getAddress(geocoder: Geocoder, address: String): List<Address> {
+    private fun getAddress(geocoder: Geocoder, address: String): MutableList<Address>? {
         return geocoder.getFromLocationName(address, 1)
     }
 
