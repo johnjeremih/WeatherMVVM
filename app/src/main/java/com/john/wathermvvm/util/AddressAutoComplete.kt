@@ -10,12 +10,13 @@ import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 
 
 class AddressAutoComplete : ActivityResultContract<Unit, Place?>() {
-    override fun createIntent(context: Context, input: Unit?): Intent {
+    override fun createIntent(context: Context, input: Unit): Intent {
         val fields = listOf(Place.Field.ADDRESS, Place.Field.NAME)
 
 
         return Autocomplete.IntentBuilder(
-            AutocompleteActivityMode.OVERLAY, fields)
+            AutocompleteActivityMode.OVERLAY, fields
+        )
             .build(context)
     }
 
