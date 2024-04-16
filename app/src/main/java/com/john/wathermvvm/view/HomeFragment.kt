@@ -36,8 +36,10 @@ class HomeFragment : Fragment() {
     private var launcher = registerForActivityResult(AddressAutoComplete()) { place ->
 
         if (place != null) {
-            val geocoder = Geocoder(activity)
-            viewModel.setCity(place.address, geocoder)
+            val geocoder = activity?.let { Geocoder(it) }
+            if (geocoder != null) {
+                viewModel.setCity(place.address, geocoder)
+            }
         }
 
     }
